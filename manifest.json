@@ -1,0 +1,32 @@
+{
+    "manifest_version": 2,
+    "name": "Chrome Programmatic Injection",
+    "version": "0.1",
+
+    "description": "This is an empty framework for extensions based on Programmatic Injection.",
+    "icons": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+    },
+
+    "browser_action": {
+        "default_icon": {
+            "16": "images/icon16-inactive.png",
+            "24": "images/icon24-inactive.png",
+            "32": "images/icon32-inactive.png"
+        },
+        "default_title": "Chrome Programmatic Injection is inactive"
+    },
+
+    "background": {
+        "scripts": ["js/background.js"],
+        "persistent": false
+    },
+
+    "minimum_chrome_version": "52",
+
+    "permissions": [
+        "activeTab"
+    ]
+}
