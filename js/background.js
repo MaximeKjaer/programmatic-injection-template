@@ -20,23 +20,11 @@ const icons = {
     }
 };
 
-
 // Gets the extension's name from the manifest.json file_
 function getExtensionName() {
     let manifest = chrome.runtime.getManifest();
     return manifest.name;
 }
-
-// Sets the browser action icon and title to an active / inactive state:
-function updateBrowserAction(active) {
-    chrome.browserAction.setTitle({
-        title: name + (active ? ' is active' : ' is inactive')
-    });
-    chrome.browserAction.setIcon({
-        path: (active ? icons.active : icons.inactive)
-    });
-}
-
 
 // When the browser action button is clicked, we need to toggle our content script:
 chrome.browserAction.onClicked.addListener(function(tab) {
@@ -68,19 +56,19 @@ chrome.browserAction.onClicked.addListener(function(tab) {
         }
     }
 
-    // Change active status:
+    // Toggle active status:
     active = !active;
 
     // Set browser action accordingly:
-    updateBrowserAction(active);
-});
+    chrome.browserAction.setTitle({
+        title: name + (active ? ' is active' : ' is inactive'),
+        tabId: tabId
+    });
+    chrome.browserAction.setIcon({
+        path: (active ? icons.active : icons.inactive),
+        tabId: tabId
+    });
 
-// When we open a new tab, we want the browser action to tell us whether the
-// content script is active on this new tab:
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-    const tabId = activeInfo.tabId;
-    let active = activeTabs.has(tabId);
-    updateBrowserAction(active);
 });
 
 // When we close a tab, we stop keeping track of it:
@@ -89,12 +77,10 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
     disabledTabs.delete(tabId);
 });
 
-// When we reload a page, or navigate away from it, our content script won't be
-// active anymore:
+// When we reload a page, we stop keeping track of it:
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
     if (changeInfo.status === 'loading') {
         activeTabs.delete(tabId);
         disabledTabs.delete(tabId);
-        updateBrowserAction(false);
     }
 });
